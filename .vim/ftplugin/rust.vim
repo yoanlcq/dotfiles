@@ -32,7 +32,10 @@ let b:projroot=fnamemodify(b:cargopath, ':h')
 if filereadable(b:cargopath)
     compiler cargo
     setlocal makeprg=cargo
-    autocmd! BufWritePost <buffer> silent make! rustc --features clippy -- -Z no-trans -Z extra-plugins=clippy | silent redraw! | silent wincmd p
+	"NOTE to self: If you don't see the quickfix window, then you probably
+	"haven't installed clippy as a cargo subcommand.
+    autocmd! BufWritePost <buffer> silent make! clippy | silent redraw! | silent wincmd p
+    "autocmd! BufWritePost <buffer> silent make! rustc --features clippy -- -Z no-trans -Z extra-plugins=clippy | silent redraw! | silent wincmd p
     map <buffer> <silent> <F5> :make run<CR>
     map <buffer> <silent> <F6> :make test<CR>
     map <buffer> <silent> <F3> :exec 'lcd' b:projroot<CR>:vimgrepa /TODO\\|FIXME\\|XXX\\|PERF\\|WISH\\|NOTE\\|unimplemented!()/ Cargo.toml examples/**/*.rs src/**/*.rs<CR>:lcd -<CR>
