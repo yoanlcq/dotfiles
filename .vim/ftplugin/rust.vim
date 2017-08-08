@@ -137,10 +137,10 @@ endif
 
 command! RustupDoc :AsyncRun rustup doc
 command! -nargs=* -buffer RustEmitAsmIntel :RustEmitAsm -C "llvm-args=-x86-asm-syntax=intel"
-command! -nargs=* -buffer RustEmitAsmRelease :RustEmitAsm -C opt-level=3
-command! -nargs=* -buffer RustEmitAsmIntelRelease :RustEmitAsm -C opt-level=3 -C "llvm-args=-x86-asm-syntax=intel"
-command! -nargs=* -buffer RustEmitAsmRelease :RustEmitAsm -C opt-level=3
-command! -nargs=* -buffer RustEmitIRRelease :RustEmitIR -C opt-level=3
+command! -nargs=* -buffer RustEmitAsmO3 :RustEmitAsm -C opt-level=3
+command! -nargs=* -buffer RustEmitAsmIntelO3 :RustEmitAsm -C opt-level=3 -C "llvm-args=-x86-asm-syntax=intel"
+command! -nargs=* -buffer RustEmitAsmO3 :RustEmitAsm -C opt-level=3
+command! -nargs=* -buffer RustEmitIRO3 :RustEmitIR -C opt-level=3
 
 " TODO FIXME
 function! GrepTasks(list)
