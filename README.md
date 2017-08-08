@@ -11,7 +11,7 @@ What follows are notes to myself.
 - `cargo install racer`
 - `rustup component add rust-src`
 
-On Windows, in a normal windows prompt :
+On Windows, in a normal windows prompt :  
 ```batch
 cd C:\Users\You
 mklink /j .vim git/dotfiles/.vim
@@ -19,7 +19,7 @@ mklink /j vimfiles .vim
 mklink .vimrc git/dotfiles/.vimrc
 mklink _vimrc .vimrc
 ```
-`~/.vim` and `~/.vimrc` are for Git BASH's Vim.
+`~/.vim` and `~/.vimrc` are for Git BASH's Vim.  
 `~/vimfiles` and `~/_vimrc` are for GVim.
 
 On \*nix:
