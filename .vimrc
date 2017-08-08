@@ -12,6 +12,13 @@ Plug 'xolox/vim-misc'
 Plug 'xolox/vim-easytags', { 'for': ['c', 'cpp', 'objc', 'objcpp', 'cuda', 'java', 'javascript'] }
 call plug#end()
 
+setglobal encoding=utf-8
+setglobal fileencoding=utf-8
+syntax on
+colorscheme desert
+setglobal guifont=Lucida_Console:h9
+set backspace=indent,eol,start
+
 set tags+=~/.vim/systags
 set tabstop=4
 set shiftwidth=4
