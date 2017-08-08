@@ -1,27 +1,44 @@
-let g:easytags_include_members = 1
-let g:easytags_async = 1
-let g:easytags_auto_highlight = 0
-let g:easytags_events = ['BufWritePost']
-
 call plug#begin('~/.vim/plugged')
+"Plug 'editorconfig/editorconfig-vim'
 Plug 'tpope/vim-sensible'
+Plug 'tpope/vim-fugitive'
+Plug 'ciaranm/detectindent'
+Plug 'skywind3000/asyncrun.vim'
 Plug 'rust-lang/rust.vim'
 Plug 'racer-rust/vim-racer'
+Plug 'mattn/webapi-vim'
 Plug 'ervandew/supertab'
 Plug 'xolox/vim-misc'
 Plug 'xolox/vim-easytags', { 'for': ['c', 'cpp', 'objc', 'objcpp', 'cuda', 'java', 'javascript'] }
 call plug#end()
 
-setglobal encoding=utf-8
-setglobal fileencoding=utf-8
-syntax on
+" GVim settings
 colorscheme desert
 setglobal guifont=Lucida_Console:h9
+" This fixes wrong backspace behaviour on one of my keyboards
 set backspace=indent,eol,start
 
-set tags+=~/.vim/systags
-set tabstop=4
-set shiftwidth=4
+" UTF-8 everywhere
+setglobal encoding=utf-8
+setglobal fileencoding=utf-8
+
+syntax on
 filetype plugin indent on
+
+set tags+=~/.vim/systags
 set omnifunc=syntaxcomplete#Complete
+
 let g:SuperTabDefaultCompletionType = "context"
+
+let g:detectindent_preferred_indent = 4 
+
+let g:easytags_include_members = 1
+let g:easytags_async = 1
+let g:easytags_auto_highlight = 0
+let g:easytags_events = ['BufWritePost']
+
+let g:EditorConfig_exclude_patterns = ['fugitive://.*']
+let g:editorconfig_w32_path = 'C:\Program Files (x86)\editorconfig\bin\editorconfig.exe'
+if filereadable(g:editorconfig_w32_path)
+	let g:EditorConfig_exec_path=g:editorconfig_w32_path
+endif
