@@ -1,4 +1,4 @@
-" QuickFix utilities (should be shared to other languages ?)
+" QuickFix utilities (TODO should be shared to other languages ?)
 let g:qf_is_shortened=0
 
 function! QuickFixRefresh()
@@ -58,10 +58,15 @@ map <buffer> <silent> gx :vsplit<CR>:call racer#GoToDefinition()<CR>
 map <buffer> <silent> gh :call racer#ShowDocumentation()<CR>
 map <buffer> <silent> <F2> :call QuickFixToggle()<CR>
 
+command! RustupDoc :AsyncRun rustup doc
+command! -nargs=* -buffer RustEmitAsmIntel   :exec 'RustEmitAsm -C "llvm-args=-x86-asm-syntax=intel" '.<q-args>
+command! -nargs=* -buffer RustEmitAsmO3      :exec 'RustEmitAsm -C opt-level=3 '.<q-args>
+command! -nargs=* -buffer RustEmitAsmIntelO3 :exec 'RustEmitAsm -C opt-level=3 -C "llvm-args=-x86-asm-syntax=intel" '.<q-args>
+command! -nargs=* -buffer RustEmitAsmO3      :exec 'RustEmitAsm -C opt-level=3 '.<q-args>
+command! -nargs=* -buffer RustEmitIRO3       :exec 'RustEmitIR  -C opt-level=3 '.<q-args>
 
 "TODO needs mappings (with <localleader>) for :
 "- Toggling asynchronous recompile-on-write
-"- Better TODO/XXX/whatever management
 
 if filereadable(b:cargopath)
     compiler cargo
@@ -74,51 +79,25 @@ if filereadable(b:cargopath)
     if isdirectory(b:projroot."/tests")
 	let b:greptasks_files.=b:projroot."/tests/**/*.rs "
     endif
-    "autocmd! BufWritePost <buffer> silent make! clippy | silent redraw! | silent wincmd p
-    "autocmd! BufWritePost <buffer> silent make! rustc --features clippy -- -Z no-trans -Z extra-plugins=clippy | silent redraw! | silent wincmd p
-    function! CargoCheck(args)
-	exec 'silent make! check '.a:args.' | silent redraw! | silent wincmd p'
+    function! CargoAsync(args)
+	exec 'AsyncRun -post=silent\ wincmd\ p -program=make @ '.a:args
     endfunction
-    function! CargoCheckFeaturesClippy(args)
-	exec 'silent make! rustc --features clippy '.a:args.' -- -Z no-trans -Z extra-plugins=clippy | silent redraw! | silent wincmd p'
+    function! CargoSync(args)
+	exec 'silent make! '.a:args.' | silent redraw! | silent wincmd p'
     endfunction
-    function! CargoClippy(args)
-	exec 'silent make! clippy '.a:args.' | silent redraw! | silent wincmd p'
+    function! CargoComplete(ArgLead, CmdLine, CursorPos)
+	let commands = ['build', 'check', 'clean', 'doc', 'new', 'init', 'run', 'test', 'bench', 'update', 'search', 'publish', 'install', 'uninstall', 'rustc', 'rustc --features clippy -- -Z no-trans -Z extra-plugins=clippy' ]
+	let opts = ['-v', '-vv', '--verbose', '-q', '--quiet', '--features', '--release']
+	call filter(commands, 'v:val =~# "^".a:ArgLead.".*$"')
+	call filter(opts, 'v:val =~# "^".a:ArgLead.".*$"')
+	return commands + opts
     endfunction
-    function! CargoTest(args)
-	exec 'silent make! test '.a:args.' | silent redraw! | silent wincmd p'
-    endfunction
-    function! CargoBench(args)
-	exec 'silent make! bench '.a:args.' | silent redraw! | silent wincmd p'
-    endfunction
-    function! CargoDoc(args)
-	exec 'silent make! doc '.a:args.' | silent redraw! | silent wincmd p'
-    endfunction
-    function! CargoBuild(args)
-	exec 'silent make! build '.a:args.' | silent redraw! | silent wincmd p'
-    endfunction
-    function! CargoBuildRelease(args)
-	exec 'silent make! build --release '.a:args.' | silent redraw! | silent wincmd p'
-    endfunction
-    function! CargoRun(args)
-	exec 'silent make! run '.a:args.' | silent redraw! | silent wincmd p'
-    endfunction
-    function! CargoRunRelease(args)
-	exec 'silent make! run --release '.a:args.' | silent redraw! | silent wincmd p'
-    endfunction
-    command! -nargs=* -buffer CargoCheck call CargoCheck(<q-args>)
-    command! -nargs=* -buffer CargoCheckFeaturesClippy call CargoCheckFeaturesClippy(<q-args>)
-    command! -nargs=* -buffer CargoClippy call CargoClippy(<q-args>)
-    command! -nargs=* -buffer CargoTest call CargoTest(<q-args>)
-    command! -nargs=* -buffer CargoBench call CargoBench(<q-args>)
-    command! -nargs=* -buffer CargoDoc call CargoDoc(<q-args>)
-    command! -nargs=* -buffer CargoBuild call CargoBuild(<q-args>)
-    command! -nargs=* -buffer CargoBuildRelease call CargoBuildRelease(<q-args>)
-    command! -nargs=* -buffer CargoRun call CargoRun(<q-args>)
-    command! -nargs=* -buffer CargoRunRelease call CargoRunRelease(<q-args>)
-    abbrev CC CargoCheck
-    abbrev Cc CargoCheck
-    " TODO make these run asynchronously somehow
+
+    command! -nargs=* -buffer -complete=customlist,CargoComplete CargoAsync call CargoAsync(<q-args>)
+    command! -nargs=* -buffer -complete=customlist,CargoComplete CargoSync call CargoSync(<q-args>)
+    abbrev Ca CargoAsync
+    abbrev CA CargoAsync
+    abbrev CS CargoSync
 else
     compiler rustc
     setlocal makeprg=rustc
@@ -131,11 +110,4 @@ else
     command! -nargs=* -buffer RustCheck call RustCheck(<q-args>)
     "autocmd! BufWritePost <buffer> exec 'silent make! -Z no-trans '.b:projroot.'/*.rs' | silent redraw! | silent wincmd p
 endif
-
-command! RustupDoc :AsyncRun rustup doc
-command! -nargs=* -buffer RustEmitAsmIntel   :exec 'RustEmitAsm -C "llvm-args=-x86-asm-syntax=intel" '.<q-args>
-command! -nargs=* -buffer RustEmitAsmO3      :exec 'RustEmitAsm -C opt-level=3 '.<q-args>
-command! -nargs=* -buffer RustEmitAsmIntelO3 :exec 'RustEmitAsm -C opt-level=3 -C "llvm-args=-x86-asm-syntax=intel" '.<q-args>
-command! -nargs=* -buffer RustEmitAsmO3      :exec 'RustEmitAsm -C opt-level=3 '.<q-args>
-command! -nargs=* -buffer RustEmitIRO3       :exec 'RustEmitIR  -C opt-level=3 '.<q-args>
 
