@@ -57,14 +57,10 @@ map <buffer> <silent> gs :split<CR>:call racer#GoToDefinition()<CR>
 map <buffer> <silent> gx :vsplit<CR>:call racer#GoToDefinition()<CR>
 map <buffer> <silent> gh :call racer#ShowDocumentation()<CR>
 map <buffer> <silent> <F2> :call QuickFixToggle()<CR>
-setlocal completeopt=menu,noinsert
 
 
 "TODO needs mappings (with <localleader>) for :
 "- Toggling asynchronous recompile-on-write
-"- Displaying release-mode LLVM IR in a separate buffer
-"- Displaying release-mode ASM (intel syntax) in a separate buffer
-"- Running "rustc -Z no-trans" and "cargo check"
 "- Better TODO/XXX/whatever management
 
 if filereadable(b:cargopath)
@@ -80,76 +76,68 @@ if filereadable(b:cargopath)
     endif
     "autocmd! BufWritePost <buffer> silent make! clippy | silent redraw! | silent wincmd p
     "autocmd! BufWritePost <buffer> silent make! rustc --features clippy -- -Z no-trans -Z extra-plugins=clippy | silent redraw! | silent wincmd p
-    function! CargoCheck()
-	silent make! check | silent redraw! | silent wincmd p
+    function! CargoCheck(args)
+	exec 'silent make! check '.a:args.' | silent redraw! | silent wincmd p'
     endfunction
-    function! CargoCheckFeaturesClippy()
-	silent make! check --features clippy | silent redraw! | silent wincmd p
+    function! CargoCheckFeaturesClippy(args)
+	exec 'silent make! rustc --features clippy '.a:args.' -- -Z no-trans -Z extra-plugins=clippy | silent redraw! | silent wincmd p'
     endfunction
-    function! CargoClippy()
-	silent make! clippy | silent redraw! | silent wincmd p
+    function! CargoClippy(args)
+	exec 'silent make! clippy '.a:args.' | silent redraw! | silent wincmd p'
     endfunction
-    function! CargoTest()
-	silent make! test | silent redraw! | silent wincmd p
+    function! CargoTest(args)
+	exec 'silent make! test '.a:args.' | silent redraw! | silent wincmd p'
     endfunction
-    function! CargoBench()
-	silent make! bench | silent redraw! | silent wincmd p
+    function! CargoBench(args)
+	exec 'silent make! bench '.a:args.' | silent redraw! | silent wincmd p'
     endfunction
-    function! CargoDoc()
-	silent make! doc | silent redraw! | silent wincmd p
+    function! CargoDoc(args)
+	exec 'silent make! doc '.a:args.' | silent redraw! | silent wincmd p'
     endfunction
-    function! CargoBuild()
-	silent make! build | silent redraw! | silent wincmd p
+    function! CargoBuild(args)
+	exec 'silent make! build '.a:args.' | silent redraw! | silent wincmd p'
     endfunction
-    function! CargoBuildRelease()
-	silent make! build --release | silent redraw! | silent wincmd p
+    function! CargoBuildRelease(args)
+	exec 'silent make! build --release '.a:args.' | silent redraw! | silent wincmd p'
     endfunction
-    function! CargoRun()
-	silent make! run | silent redraw! | silent wincmd p
+    function! CargoRun(args)
+	exec 'silent make! run '.a:args.' | silent redraw! | silent wincmd p'
     endfunction
-    function! CargoRunRelease()
-	silent make! run --release | silent redraw! | silent wincmd p
+    function! CargoRunRelease(args)
+	exec 'silent make! run --release '.a:args.' | silent redraw! | silent wincmd p'
     endfunction
-    command! -buffer CargoCheck call CargoCheck()
-    command! -buffer CargoCheckFeaturesClippy call CargoCheckFeaturesClippy()
-    command! -buffer CargoClippy call CargoClippy()
-    command! -buffer CargoTest call CargoTest()
-    command! -buffer CargoBench call CargoBench()
-    command! -buffer CargoDoc call CargoDoc()
-    command! -buffer CargoBuild call CargoBuild()
-    command! -buffer CargoBuildRelease call CargoBuildRelease()
-    command! -buffer CargoRun call CargoRun()
-    command! -buffer CargoRunRelease call CargoRunRelease()
-    " TODO make the above accept any number of extra arguments (e.g --verbose)
+    command! -nargs=* -buffer CargoCheck call CargoCheck(<q-args>)
+    command! -nargs=* -buffer CargoCheckFeaturesClippy call CargoCheckFeaturesClippy(<q-args>)
+    command! -nargs=* -buffer CargoClippy call CargoClippy(<q-args>)
+    command! -nargs=* -buffer CargoTest call CargoTest(<q-args>)
+    command! -nargs=* -buffer CargoBench call CargoBench(<q-args>)
+    command! -nargs=* -buffer CargoDoc call CargoDoc(<q-args>)
+    command! -nargs=* -buffer CargoBuild call CargoBuild(<q-args>)
+    command! -nargs=* -buffer CargoBuildRelease call CargoBuildRelease(<q-args>)
+    command! -nargs=* -buffer CargoRun call CargoRun(<q-args>)
+    command! -nargs=* -buffer CargoRunRelease call CargoRunRelease(<q-args>)
+    abbrev CC CargoCheck
+    abbrev Cc CargoCheck
     " TODO make these run asynchronously somehow
 else
     compiler rustc
     setlocal makeprg=rustc
     let b:greptasks_files=expand('%:p')
     let b:projroot=b:cdir
-    function! RustCheck()
-	exec 'silent make! -Z no-trans '.expand('%:p').' | silent redraw! | silent wincmd p'
+    function! RustCheck(args)
+	exec 'silent make! -Z no-trans '.expand('%:p').' '.a:args.' | silent redraw! | silent wincmd p'
     endfunction
 
-    command! -buffer RustCheck call RustCheck()
+    command! -nargs=* -buffer RustCheck call RustCheck(<q-args>)
     "autocmd! BufWritePost <buffer> exec 'silent make! -Z no-trans '.b:projroot.'/*.rs' | silent redraw! | silent wincmd p
 endif
 
 command! RustupDoc :AsyncRun rustup doc
-command! -nargs=* -buffer RustEmitAsmIntel :RustEmitAsm -C "llvm-args=-x86-asm-syntax=intel"
-command! -nargs=* -buffer RustEmitAsmO3 :RustEmitAsm -C opt-level=3
-command! -nargs=* -buffer RustEmitAsmIntelO3 :RustEmitAsm -C opt-level=3 -C "llvm-args=-x86-asm-syntax=intel"
-command! -nargs=* -buffer RustEmitAsmO3 :RustEmitAsm -C opt-level=3
-command! -nargs=* -buffer RustEmitIRO3 :RustEmitIR -C opt-level=3
-
-" TODO FIXME
-function! GrepTasks(list)
-	let re=""
-	for i in a:list
-	    let re.=i."\\|"
-    	endfor
-	vimgrepadd /re/ b:greptasks_files
-endfunction
+command! -nargs=* -buffer RustEmitAsmIntel   :exec 'RustEmitAsm -C "llvm-args=-x86-asm-syntax=intel" '.<q-args>
+command! -nargs=* -buffer RustEmitAsmO3      :exec 'RustEmitAsm -C opt-level=3 '.<q-args>
+command! -nargs=* -buffer RustEmitAsmIntelO3 :exec 'RustEmitAsm -C opt-level=3 -C "llvm-args=-x86-asm-syntax=intel" '.<q-args>
+command! -nargs=* -buffer RustEmitAsmO3      :exec 'RustEmitAsm -C opt-level=3 '.<q-args>
+command! -nargs=* -buffer RustEmitIRO3       :exec 'RustEmitIR  -C opt-level=3 '.<q-args>
 
 "TODO: Allow this to be improved with command and custom completion.
 map <buffer> <silent> <F3> :exec 'vimgrepadd /TODO\\|FIXME\\|XXX\\|PERF\\|WISH\\|NOTE\\|unimplemented!()/ '.b:greptasks_files<CR>

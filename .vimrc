@@ -1,5 +1,6 @@
 call plug#begin('~/.vim/plugged')
 "Plug 'editorconfig/editorconfig-vim'
+Plug 'sgur/vim-editorconfig'
 Plug 'tpope/vim-sensible'
 Plug 'tpope/vim-fugitive'
 Plug 'ciaranm/detectindent'
@@ -27,6 +28,7 @@ filetype plugin indent on
 
 set tags+=~/.vim/systags
 set omnifunc=syntaxcomplete#Complete
+setglobal completeopt=menu,noinsert
 
 let g:SuperTabDefaultCompletionType = "context"
 
@@ -38,7 +40,3 @@ let g:easytags_auto_highlight = 0
 let g:easytags_events = ['BufWritePost']
 
 let g:EditorConfig_exclude_patterns = ['fugitive://.*']
-let g:editorconfig_w32_path = 'C:\Program Files (x86)\editorconfig\bin\editorconfig.exe'
-if filereadable(g:editorconfig_w32_path)
-	let g:EditorConfig_exec_path=g:editorconfig_w32_path
-endif
