@@ -40,3 +40,42 @@ let g:easytags_auto_highlight = 0
 let g:easytags_events = ['BufWritePost']
 
 let g:EditorConfig_exclude_patterns = ['fugitive://.*']
+
+
+" Tasks GREP
+
+function! TasksGrepGetFiles()
+    if exists('b:tasksgrep_files')
+	return b:tasksgrep_files
+    else
+	return expand('%:p')
+    endif
+endfunction
+
+function! TasksGrepGrep(grep, list)
+    exec 'try | '.a:grep.' /'.join(a:list, '\|').'/j '.TasksGrepGetFiles().' | catch /^Vim\%((\a\+)\)\=:E480/ | echom "No matching task has been found." | endtry'
+endfunction
+
+function! TasksGrep(...)
+    return TasksGrepGrep('vimgrep', a:000)
+endfunction
+
+function! TasksGrepAdd(...)
+    return TasksGrepGrep('vimgrepadd', a:000)
+endfunction
+
+"NOTE: See :h expr4
+function! TasksGrepComplete(ArgLead, CmdLine, CursorPos)
+    let tags = ['FIXME', 'BUG', 'TODO', 'XXX', 'HACK', 'NOTE', 'CHANGED', 'IDEA', 'WISH', 'PERF', 'INFO', 'unimplemented!']
+    call filter(tags, 'v:val =~? a:ArgLead')
+    return tags
+endfunction
+
+command! -nargs=* -complete=customlist,TasksGrepComplete TasksGrep    call TasksGrep   (<f-args>) | vertical cwindow 80
+command! -nargs=* -complete=customlist,TasksGrepComplete TasksGrepAdd call TasksGrepAdd(<f-args>) | vertical cwindow 80
+abbrev TG TasksGrep
+abbrev TGA TasksGrepAdd
+
+autocmd Syntax * call matchadd('Todo',  '\W\zs\(TODO\|FIXME\|CHANGED\|XXX\|BUG\|HACK\|unimplemented!\)')
+autocmd Syntax * call matchadd('Debug', '\W\zs\(NOTE\|INFO\|IDEA\|WISH\|PERF\)')
+
