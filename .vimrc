@@ -1,3 +1,6 @@
+" TODO worried about detectindent and editorconfig
+" TODO make stuff work on GVim
+
 call plug#begin('~/.vim/plugged')
 "Plug 'editorconfig/editorconfig-vim'
 Plug 'sgur/vim-editorconfig'
@@ -9,8 +12,9 @@ Plug 'rust-lang/rust.vim'
 Plug 'racer-rust/vim-racer'
 Plug 'mattn/webapi-vim'
 Plug 'ervandew/supertab'
-Plug 'xolox/vim-misc'
-Plug 'xolox/vim-easytags', { 'for': ['c', 'cpp', 'objc', 'objcpp', 'cuda', 'java', 'javascript'] }
+" TODO: use clang_complete instead
+"Plug 'xolox/vim-misc'
+"Plug 'xolox/vim-easytags', { 'for': ['c', 'cpp', 'objc', 'objcpp', 'cuda', 'java', 'javascript'] }
 call plug#end()
 
 " GVim settings
@@ -42,7 +46,34 @@ let g:easytags_events = ['BufWritePost']
 let g:EditorConfig_exclude_patterns = ['fugitive://.*']
 
 
-" Tasks GREP
+" Completion utilities
+
+" Removes duplicates in a list, preserving order.
+" uniq() doesn't cut it because it operates on _adjacent_ duplicates
+function! Uniq(list)
+    return filter(copy(a:list), 'index(a:list, v:val) == v:key')
+endfunction
+" Quick fuzzy-matcher for command completion.
+" Welp, copy pasta, but works just as well
+" NOTE: See :h expr4
+function Suggest_CaseSensitive(list, ArgLead)
+    let startingwith = copy(a:list)
+    let containing = copy(a:list)
+    call filter(startingwith, 'v:val =~# "^".a:ArgLead.".*$"')
+    call filter(containing,   'v:val =~#     a:ArgLead'      )
+    return Uniq(startingwith + containing)
+endfunction
+function Suggest_CaseInsensitive(list, ArgLead)
+    let startingwith = copy(a:list)
+    let containing = copy(a:list)
+    call filter(startingwith, 'v:val =~? "^".a:ArgLead.".*$"')
+    call filter(containing,   'v:val =~?     a:ArgLead'      )
+    return Uniq(startingwith + containing)
+endfunction
+
+
+
+" Tasks GREP: collect Todo-items into QuickFix window
 
 function! TasksGrepGetFiles()
     if exists('b:tasksgrep_files')
@@ -64,11 +95,9 @@ function! TasksGrepAdd(...)
     return TasksGrepGrep('vimgrepadd', a:000)
 endfunction
 
-"NOTE: See :h expr4
 function! TasksGrepComplete(ArgLead, CmdLine, CursorPos)
     let tags = ['FIXME', 'BUG', 'TODO', 'XXX', 'HACK', 'NOTE', 'CHANGED', 'IDEA', 'WISH', 'PERF', 'INFO', 'unimplemented!']
-    call filter(tags, 'v:val =~? a:ArgLead')
-    return tags
+    return Suggest_CaseInsensitive(tags, a:ArgLead)
 endfunction
 
 command! -nargs=* -complete=customlist,TasksGrepComplete TasksGrep    call TasksGrep   (<f-args>) | vertical cwindow 80
@@ -76,6 +105,5 @@ command! -nargs=* -complete=customlist,TasksGrepComplete TasksGrepAdd call Tasks
 abbrev TG TasksGrep
 abbrev TGA TasksGrepAdd
 
-autocmd Syntax * call matchadd('Todo',  '\W\zs\(TODO\|FIXME\|CHANGED\|XXX\|BUG\|HACK\|unimplemented!\)')
-autocmd Syntax * call matchadd('Debug', '\W\zs\(NOTE\|INFO\|IDEA\|WISH\|PERF\)')
-
+" Setup tag highlighting
+" Do it
