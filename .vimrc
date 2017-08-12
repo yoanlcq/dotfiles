@@ -2,16 +2,20 @@
 " TODO make stuff work on GVim
 
 call plug#begin('~/.vim/plugged')
+" Editor setup utilities
 "Plug 'editorconfig/editorconfig-vim'
 Plug 'sgur/vim-editorconfig'
 Plug 'tpope/vim-sensible'
 Plug 'tpope/vim-fugitive'
 Plug 'ciaranm/detectindent'
+Plug 'ervandew/supertab'
 Plug 'skywind3000/asyncrun.vim'
+Plug 'mattn/webapi-vim'
+" Rust
 Plug 'rust-lang/rust.vim'
 Plug 'racer-rust/vim-racer'
-Plug 'mattn/webapi-vim'
-Plug 'ervandew/supertab'
+" Wren (wren.io)
+Plug 'lluchs/vim-wren'
 " TODO: use clang_complete instead
 "Plug 'xolox/vim-misc'
 "Plug 'xolox/vim-easytags', { 'for': ['c', 'cpp', 'objc', 'objcpp', 'cuda', 'java', 'javascript'] }
@@ -27,12 +31,23 @@ set backspace=indent,eol,start
 setglobal encoding=utf-8
 setglobal fileencoding=utf-8
 
+set tabstop=4
+
 syntax on
 filetype plugin indent on
 
 set tags+=~/.vim/systags
 set omnifunc=syntaxcomplete#Complete
 setglobal completeopt=menu,noinsert
+set nocompatible
+set incsearch
+set hlsearch
+set lazyredraw
+set wildmenu
+set scrolloff=2
+set number
+highlight LineNr term=bold cterm=NONE ctermfg=DarkGrey ctermbg=NONE gui=NONE guifg=DarkGrey guibg=NONE
+set colorcolumn=80
 
 let g:SuperTabDefaultCompletionType = "context"
 
@@ -106,4 +121,49 @@ abbrev TG TasksGrep
 abbrev TGA TasksGrepAdd
 
 " Setup tag highlighting
-" Do it
+" Do it for all file types anyway. Why not plain text and the like, after all?
+autocmd Syntax * call matchadd('Todo',  '\W\zs\(TODO\|FIXME\|CHANGED\|XXX\|BUG\|HACK\|unimplemented!\)')
+autocmd Syntax * call matchadd('Debug', '\W\zs\(NOTE\|INFO\|IDEA\|WISH\|PERF\)')
+
+autocmd FileType * :DetectIndent
+autocmd QuickFixCmdPost * vertical copen 80
+
+" QuickFix utilities. Useful for shortening the QuickFix list on Rust
+" projects, and restoring it, at will.
+
+let g:qf_is_shortened=0
+
+function! QuickFixRefresh()
+    if g:qf_is_shortened
+        call setqflist(g:short_qflist)
+    else
+        call setqflist(g:qflist)
+    endif
+endfunction
+
+function! QuickFixPost()
+    let g:qflist=getqflist()
+    let g:short_qflist=[]
+    for i in g:qflist
+        if i.valid
+	    call add(g:short_qflist, i)
+	endif
+    endfor
+    call QuickFixRefresh()
+endfunction
+
+function! QuickFixToggle()
+    let g:qf_is_shortened=!g:qf_is_shortened
+    call QuickFixRefresh()
+endfunction
+
+call QuickFixPost()
+autocmd! QuickFixCmdPost <buffer> call QuickFixPost() | vertical cwindow 80
+" To prevent QuickFix from stealing focus
+" https://github.com/fatih/vim-go/issues/1073
+"autocmd Syntax qf wincmd p
+
+command! QuickFixRefresh call QuickFixRefresh()
+command! QuickFixPost call QuickFixPost()
+command! QuickFixToggle call QuickFixToggle()
+
