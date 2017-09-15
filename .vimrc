@@ -4,10 +4,10 @@
 call plug#begin('~/.vim/plugged')
 " Editor setup utilities
 "Plug 'editorconfig/editorconfig-vim'
-Plug 'sgur/vim-editorconfig'
+"Plug 'sgur/vim-editorconfig'
 Plug 'tpope/vim-sensible'
 Plug 'tpope/vim-fugitive'
-Plug 'ciaranm/detectindent'
+"Plug 'ciaranm/detectindent'
 Plug 'ervandew/supertab'
 Plug 'skywind3000/asyncrun.vim'
 Plug 'mattn/webapi-vim'
@@ -31,10 +31,12 @@ set backspace=indent,eol,start
 setglobal encoding=utf-8
 setglobal fileencoding=utf-8
 
-set tabstop=4
-
 syntax on
 filetype plugin indent on
+"NOTE: Rust style, already enforced by rust.vim, but good for any other format
+set tabstop=4 shiftwidth=4 softtabstop=4 expandtab
+"set list
+"set listchars=tab:>-
 
 set tags+=~/.vim/systags
 set omnifunc=syntaxcomplete#Complete
@@ -125,7 +127,7 @@ abbrev TGA TasksGrepAdd
 autocmd Syntax * call matchadd('Todo',  '\W\zs\(TODO\|FIXME\|CHANGED\|XXX\|BUG\|HACK\|unimplemented!\)')
 autocmd Syntax * call matchadd('Debug', '\W\zs\(NOTE\|INFO\|IDEA\|WISH\|PERF\)')
 
-autocmd FileType * :DetectIndent
+"autocmd FileType * :DetectIndent
 autocmd QuickFixCmdPost * vertical copen 80
 
 " QuickFix utilities. Useful for shortening the QuickFix list on Rust
