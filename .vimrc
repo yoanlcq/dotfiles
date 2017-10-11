@@ -7,6 +7,7 @@ call plug#begin('~/.vim/plugged')
 "Plug 'sgur/vim-editorconfig'
 Plug 'tpope/vim-sensible'
 Plug 'tpope/vim-fugitive'
+"Plug 'tpope/vim-dispatch'
 "Plug 'ciaranm/detectindent'
 Plug 'ervandew/supertab'
 Plug 'skywind3000/asyncrun.vim'
@@ -19,6 +20,7 @@ Plug 'lluchs/vim-wren'
 " TODO: use clang_complete instead
 "Plug 'xolox/vim-misc'
 "Plug 'xolox/vim-easytags', { 'for': ['c', 'cpp', 'objc', 'objcpp', 'cuda', 'java', 'javascript'] }
+"Plug 'OmniSharp/omnisharp-vim'
 call plug#end()
 
 " GVim settings

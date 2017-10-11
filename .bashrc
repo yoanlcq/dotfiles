@@ -742,4 +742,5 @@ fi
 
 export FE_PATH=/home/yoon/git/FATE
 export PATH=$FE_PATH/bin/bash:$PATH
-PATH=$PATH:/usr/local/emsdk-portable/emscripten/1.37.9
+export PATH=$PATH:/usr/local/emsdk-portable/emscripten/1.37.9
+export PATH=$PATH:/opt/Unity/Editor:/opt/Unity/MonoDevelop/bin
