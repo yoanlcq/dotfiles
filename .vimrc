@@ -15,6 +15,8 @@ Plug 'mattn/webapi-vim'
 " Rust
 Plug 'rust-lang/rust.vim'
 Plug 'racer-rust/vim-racer'
+
+Plug 'roman/golden-ratio'
 " Wren (wren.io)
 Plug 'lluchs/vim-wren'
 " TODO: use clang_complete instead
