@@ -16,13 +16,15 @@ Plug 'mattn/webapi-vim'
 Plug 'rust-lang/rust.vim'
 Plug 'racer-rust/vim-racer'
 
-Plug 'roman/golden-ratio'
+"Plug 'roman/golden-ratio'
 " Wren (wren.io)
 Plug 'lluchs/vim-wren'
 " TODO: use clang_complete instead
 "Plug 'xolox/vim-misc'
 "Plug 'xolox/vim-easytags', { 'for': ['c', 'cpp', 'objc', 'objcpp', 'cuda', 'java', 'javascript'] }
 "Plug 'OmniSharp/omnisharp-vim'
+
+Plug 'flazz/vim-colorschemes'
 call plug#end()
 
 " GVim settings
@@ -173,3 +175,4 @@ command! QuickFixRefresh call QuickFixRefresh()
 command! QuickFixPost call QuickFixPost()
 command! QuickFixToggle call QuickFixToggle()
 
+colorscheme badwolf
