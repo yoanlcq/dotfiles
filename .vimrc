@@ -175,4 +175,5 @@ command! QuickFixRefresh call QuickFixRefresh()
 command! QuickFixPost call QuickFixPost()
 command! QuickFixToggle call QuickFixToggle()
 
+colorscheme 256-jungle "I have no idea why I need this for badwolf theme to work.
 colorscheme badwolf
