@@ -4,6 +4,12 @@ set hidden
 autocmd! BufWritePost,BufEnter * Neomake
 "let g:neomake_open_list = 2
 
+let s:quitting = 0
+autocmd QuitPre *.rs let s:quitting = 1
+autocmd BufEnter *.rs let s:quitting = 0
+autocmd BufWritePost,BufEnter *.rs if ! s:quitting | Neomake | else | echom "Neomake disabled"| endif
+let g:neomake_warning_sign = {'text': '?'}
+
 "Deoplete Racer
 let g:rustc_sysroot=fnamemodify(substitute(system("rustc --print sysroot"), '\n\+', '', ''), ':gs?\\?/?')
 let g:racer_binary=fnamemodify(substitute(system("which racer"), '\n\+', '', ''), ':gs?\\?/?')
