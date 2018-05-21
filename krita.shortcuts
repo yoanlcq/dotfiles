@@ -1,0 +1,11 @@
+[Shortcuts]
+KisToolSelectOutline=Ctrl+Q
+KisToolSelectPolygonal=Ctrl+W
+KritaShape/KisToolMultiBrush=none
+file_quit=none
+make_brush_color_desaturated=Q
+make_brush_color_saturated=S
+shift_brush_color_clockwise=U
+shift_brush_color_counter_clockwise=Y
+show_common_colors=none
+show_minimal_shade_selector=Shift+N; A
