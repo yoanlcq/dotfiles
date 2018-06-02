@@ -14,6 +14,7 @@ let g:neomake_warning_sign = {'text': '?'}
 let g:rustc_sysroot=fnamemodify(substitute(system("rustc --print sysroot"), '\n\+', '', ''), ':gs?\\?/?')
 let g:racer_binary=fnamemodify(substitute(system("which racer"), '\n\+', '', ''), ':gs?\\?/?')
 let g:rustc_source_path=g:rustc_sysroot."/lib/rustlib/src/rust/src/"
+let $RUST_SRC_PATH=g:rustc_source_path
 let g:deoplete#sources#rust#racer_binary=g:racer_binary
 let g:deoplete#sources#rust#rust_source_path=g:rustc_source_path
 let g:deoplete#sources#rust#show_duplicates=0

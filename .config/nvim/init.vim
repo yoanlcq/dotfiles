@@ -35,7 +35,10 @@ set completeopt=menu,menuone
 set wildignorecase
 set mouse=a
 
-"Deoplete
+" Terminal
+:tnoremap <Esc> <C-\><C-n>
+
+" Deoplete
 let g:deoplete#enable_at_startup = 1
 let g:deoplete#enable_ignore_case = 1
 let g:deoplete#enable_on_insert_enter = 1
